@@ -1,0 +1,31 @@
+! habilita root
+en
+! habilita configuracoes
+config t
+! abre a interface de rede
+int gigabitEthernet0/0/0
+! seta o IP da interface
+ip add 192.168.1.1 255.255.255.0
+! abre a interface da subrede
+int gigabitEthernet0/0/0.10
+! encapsula a subrede
+encapsulation dot1Q 10
+! seta o IP da subrede
+ip add 192.168.10.1 255.255.255.0
+! seta quem vai trazer o ip da subrede
+ip helper-address 10.10.10.2
+int gigabitEthernet0/0/0.20
+encapsulation dot1Q 20
+ip add 192.168.20.1 255.255.255.0
+ip helper-address 10.10.10.2
+int gigabitEthernet0/0/0.30
+encapsulation dot1Q 30
+ip add 192.168.30.1 255.255.255.0
+ip helper-address 10.10.10.2
+exit
+interface gigabitEthernet0/0/0.40
+encapsulation dot1Q 40
+ip add 10.10.10.1 255.255.255.0
+exit
+exit
+write memory

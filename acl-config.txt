@@ -1,25 +1,57 @@
 en
 conf t
 
-access-list 101 permit ip 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255
-access-list 101 permit tcp 192.168.10.0 0.0.0.255 host 10.10.10.2 eq 80
-access-list 101 permit ip 192.168.20.0 0.0.0.255 192.168.10.0 0.0.0.255
-access-list 101 permit tcp 192.168.20.0 0.0.0.255 host 10.10.10.2 eq 80
-access-list 101 permit udp any any eq 53
+! 10 e 20
+ip access-list extended 101
+! DHCP
+ permit udp any any eq 67
+! Comunicação ADM-ENG
+ permit udp any any eq 68
 
-access-list 102 deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.255
-access-list 102 deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255
-access-list 102 permit tcp 192.168.30.0 0.0.0.255 host 10.10.10.2 eq 80
-access-list 102 permit udp any any eq 53
+ permit ip 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255
+ permit ip 192.168.20.0 0.0.0.255 192.168.10.0 0.0.0.255
+! HTTP  
+ permit tcp 192.168.10.0 0.0.0.255 host 10.10.10.2 eq 80
+ permit tcp 192.168.20.0 0.0.0.255 host 10.10.10.2 eq 80  
+! DNS
+ permit udp any any eq 53
+! Ping
+ permit icmp any any
+! Respostas HTTP
+ permit tcp host 10.10.10.2 eq 80 any
+! Respostas DNS
+ permit udp host 10.10.10.2 eq 53 any
 
+!30
+ip access-list extended 102
+! DHCP
+ permit udp any any eq 67
+ permit udp any any eq 68    
+ deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.255  
+ deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255
+! HTTP  
+ permit tcp 192.168.30.0 0.0.0.255 host 10.10.10.2 eq 80
+! DNS
+ permit udp any any eq 53  
+! Ping  
+ permit icmp any any         
+! Respostas HTTP
+ permit tcp host 10.10.10.2 eq 80 any  
+! Respostas DNS
+ permit udp host 10.10.10.2 eq 53 any  
+
+! Aplicar na direção OUT (mais seguro para DHCP)
 interface GigabitEthernet0/0/0.10
-ip access-group 101 in
+  no ip access-group 101 out
+  ip access-group 101 in
 
 interface GigabitEthernet0/0/0.20
-ip access-group 101 in
+  no ip access-group 101 out
+  ip access-group 101 in
 
 interface GigabitEthernet0/0/0.30
-ip access-group 102 in
+  no ip access-group 102 out
+  ip access-group 102 in
 
 exit
 exit

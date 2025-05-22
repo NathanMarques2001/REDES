@@ -1,0 +1,16 @@
+enable
+configure terminal
+
+no access-list 102
+
+access-list 102 deny ip 192.168.30.0 0.0.0.255 host 10.10.10.3
+access-list 102 deny ip 192.168.30.0 0.0.0.255 host 10.10.10.4
+access-list 102 deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.255
+access-list 102 deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255
+access-list 102 permit tcp 192.168.30.0 0.0.0.255 host 10.10.10.2 eq www 
+access-list 102 permit udp any any eq domain
+access-list 102 permit udp any any eq bootpc
+access-list 102 permit udp any any eq bootps
+access-list 102 deny icmp any any
+end
+write memory

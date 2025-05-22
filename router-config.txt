@@ -1,7 +1,10 @@
 ! habilita root
 en
 ! habilita configuracoes
-config t
+conf t
+! Configura a interface principal
+interface gigabitEthernet0/0/0
+no shutdown
 ! abre a interface de rede
 int gigabitEthernet0/0/0
 ! seta o IP da interface

@@ -43,6 +43,19 @@ no ip access-group 102 out
 ip access-group 102 in
 
 exit
+
+ip access-list extended 103
+permit udp 192.168.50.0 0.0.0.255 any eq 53
+permit udp any eq 53 192.168.50.0 0.0.0.255
+permit tcp 192.168.50.0 0.0.0.255 host 10.10.10.2 eq 80
+permit tcp 192.168.50.0 0.0.0.255 host 10.10.10.3 eq 80
+permit tcp 192.168.50.0 0.0.0.255 host 10.10.10.4 eq 80
+permit icmp any any
+permit ip 192.168.50.0 0.0.0.255 10.10.10.0 0.0.0.255
+
+interface Serial0/1/0
+ip access-group 103 in
+
 exit
 
 write memory

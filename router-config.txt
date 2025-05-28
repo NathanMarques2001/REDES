@@ -30,5 +30,10 @@ interface gigabitEthernet0/0/0.40
 encapsulation dot1Q 40
 ip add 10.10.10.1 255.255.255.0
 exit
+ip route 192.168.50.0 255.255.255.0 200.0.0.2
 exit
+interface Serial0/1/0
+ip address 200.0.0.1 255.255.255.252
+clock rate 64000
+no shutdown
 write memory

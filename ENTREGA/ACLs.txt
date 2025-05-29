@@ -1,0 +1,77 @@
+1. ACL 101 - Políticas para Administração (VLAN 10) e Engenharia (VLAN 20)
+Esta ACL é aplicada nas interfaces GigabitEthernet0/0/0.10 (VLAN 10 - Administração) e GigabitEthernet0/0/0.20 (VLAN 20 - Engenharia) no sentido de entrada (ip access-group 101 in). Isso significa que ela controla o tráfego originado nessas VLANs antes que ele seja roteado para outros destinos.
+
+Regras Detalhadas:
+
+permit udp any any eq 67
+permit udp any any eq 68
+Propósito: Permitem o tráfego DHCP (Dynamic Host Configuration Protocol). A porta UDP 67 é usada pelo servidor DHCP e a porta UDP 68 pelo cliente DHCP. Isso garante que os PCs das VLANs de Administração e Engenharia possam obter seus endereços IP automaticamente.
+permit ip 192.168.10.0 0.0.0.127 192.168.20.0 0.0.0.127
+permit ip 192.168.20.0 0.0.0.127 192.168.10.0 0.0.0.127
+Propósito: Estas são as regras-chave para permitir a comunicação bidirecional completa entre os departamentos de Administração (sub-rede 192.168.10.0 /25) e Engenharia (sub-rede 192.168.20.0 /25). Isso atende ao requisito de "Permitir que Administração e Engenharia se comuniquem entre si".
+permit tcp 192.168.10.0 0.0.0.127 host 192.168.40.2 eq 80
+permit tcp 192.168.20.0 0.0.0.127 host 192.168.40.2 eq 80
+permit tcp 192.168.10.0 0.0.0.127 host 192.168.40.3 eq 80
+permit tcp 192.168.20.0 0.0.0.127 host 192.168.40.3 eq 80
+permit tcp 192.168.10.0 0.0.0.127 host 192.168.40.4 eq 80
+permit tcp 192.168.20.0 0.0.0.127 host 192.168.40.4 eq 80
+Propósito: Permitem que os usuários de Administração e Engenharia acessem os servidores HTTP (web) localizados nos IPs 192.168.40.2, 192.168.40.3 e 192.168.40.4 (assumindo que estes são servidores web ou de aplicações internas com acesso via porta 80).
+permit udp any any eq 53
+Propósito: Permite o tráfego DNS (Domain Name System) na porta UDP 53. Essencial para a resolução de nomes de domínio para endereços IP, permitindo o acesso a recursos por nome em vez de IP.
+permit icmp any any
+Propósito: Permite o tráfego ICMP (Internet Control Message Protocol), que inclui comandos como ping e traceroute. Isso é fundamental para testes de conectividade e diagnóstico de rede.
+permit tcp 192.168.10.0 0.0.0.127 host 192.168.40.5 eq 25
+permit tcp 192.168.10.0 0.0.0.127 host 192.168.40.5 eq 110
+permit tcp 192.168.20.0 0.0.0.127 host 192.168.40.5 eq 25
+permit tcp 192.168.20.0 0.0.0.127 host 192.168.40.5 eq 110
+Propósito: Permitem que os usuários de Administração e Engenharia acessem o servidor de e-mail (assumido em 192.168.40.5) utilizando os protocolos SMTP (porta TCP 25 para envio) e POP3 (porta TCP 110 para recebimento).
+permit tcp host 192.168.40.2 eq 80 any
+permit udp host 192.168.40.2 eq 53 any
+permit tcp host 192.168.40.5 eq 25 any
+permit tcp host 192.168.40.5 eq 110 any
+Propósito: Estas regras permitem o tráfego de retorno das respostas dos servidores (192.168.40.2 para HTTP, 192.168.40.2 para DNS, 192.168.40.5 para SMTP e POP3) de volta para qualquer host na rede. Isso é vital para que as conexões sejam estabelecidas e os dados sejam recebidos pelos clientes.
+--------------------------------------------------------------------------------------------------
+2. ACL 102 - Políticas para Visitantes (VLAN 30)
+Esta ACL é aplicada na interface GigabitEthernet0/0/0.30 (VLAN 30 - Visitantes) no sentido de entrada (ip access-group 102 in). Ela foi projetada para restringir o acesso dos visitantes, conforme os requisitos do projeto.
+
+Regras Detalhadas:
+
+permit udp any any eq 67
+permit udp any any eq 68
+Propósito: Permitem o tráfego DHCP para os visitantes, garantindo que eles possam obter endereços IP.
+deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.127
+deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.127
+deny ip 192.168.30.0 0.0.0.255 192.168.50.0 0.0.0.127
+Propósito: Negam explicitamente o tráfego originado na VLAN de Visitantes (192.168.30.0 /24) para as VLANs de Administração (192.168.10.0 /25), Engenharia (192.168.20.0 /25) e Filial (192.168.50.0 /25). Isso é crucial para "Restringir a VLAN dos Visitantes: eles só podem acessar a internet... mas não podem acessar PCs internos."
+deny ip 192.168.30.0 0.0.0.255 host 192.168.40.3
+deny ip 192.168.30.0 0.0.0.255 host 192.168.40.4
+Propósito: Negam o acesso dos visitantes a servidores específicos (192.168.40.3 e 192.168.40.4) na rede de infraestrutura. Isso reforça a restrição de acesso a "PCs internos" e aplicações não destinadas a visitantes.
+permit tcp 192.168.30.0 0.0.0.255 host 192.168.40.2 eq 80
+Propósito: Permite que os visitantes acessem o servidor HTTP (web) em 192.168.40.2 na porta 80. Isso atende ao requisito de que "eles só podem acessar a internet (simulada pelo servidor HTTP)".
+permit udp any any eq 53
+Propósito: Permite o tráfego DNS para os visitantes, necessário para a resolução de nomes ao acessar o servidor HTTP.
+permit icmp any any
+Propósito: Permite o tráfego ICMP. Embora não seja estritamente necessário para acesso à internet, permite que os visitantes façam testes de conectividade básicos.
+permit tcp 192.168.30.0 0.0.0.255 host 192.168.40.5 eq 25
+permit tcp 192.168.30.0 0.0.0.255 host 192.168.40.5 eq 110
+Ponto de Atenção: Estas regras permitem que os visitantes acessem o servidor de e-mail (SMTP e POP3) em 192.168.40.5. Isso pode contradizer a política de "eles só podem acessar a internet (simulada pelo servidor HTTP), mas não podem acessar PCs internos". Um servidor de e-mail é considerado um recurso interno. Se a intenção é estritamente acesso à internet via HTTP, estas linhas deveriam ser removidas ou substituídas por regras que permitam apenas acesso a IPs externos (simulando a internet real).
+permit tcp host 192.168.40.2 eq 80 any
+permit udp host 192.168.40.2 eq 53 any
+permit tcp host 192.168.40.5 eq 25 any
+permit tcp host 192.168.40.5 eq 110 any
+Propósito: Permitem o tráfego de retorno das respostas dos servidores (HTTP, DNS, Mail) para os clientes visitantes.
+--------------------------------------------------------------------------------------------------
+3. ACL 103 - Políticas para a Filial
+Esta ACL é aplicada na interface Serial0/1/0 (link Matriz-Filial) no sentido de entrada (ip access-group 103 in). Ela controla o tráfego originado na Filial e destinado à Matriz.
+
+Regras Detalhadas:
+
+permit ip 192.168.50.0 0.0.0.127 host 192.168.40.2
+permit ip 192.168.50.0 0.0.0.127 host 192.168.40.3
+permit ip 192.168.50.0 0.0.0.127 host 192.168.40.4
+Propósito: Permitem que a rede da Filial (192.168.50.0 /25) acesse os servidores internos da Matriz (192.168.40.2, 192.168.40.3, 192.168.40.4). Isso contribui para o requisito de que a filial "deve ter total acesso aos servidores internos e demais aplicações do escritório central".
+permit icmp any any
+Propósito: Permite o tráfego ICMP, essencial para testes de conectividade e diagnóstico entre a Filial e a Matriz.
+permit tcp 192.168.50.0 0.0.0.127 host 192.168.40.5 eq 25
+permit tcp 192.168.50.0 0.0.0.127 host 192.168.40.5 eq 110
+Propósito: Permitem que a Filial acesse o servidor de e-mail (SMTP e POP3) em 192.168.40.5. Isso reforça o "total acesso" aos serviços internos.

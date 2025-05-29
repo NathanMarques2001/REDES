@@ -1,0 +1,35 @@
+Melhorias e Configurações Adicionais
+Além da estrutura de rede e das políticas de acesso básicas, foram implementadas as seguintes funcionalidades e serviços para aprimorar a simulação e demonstrar uma rede mais completa:
+--------------------------------------------------------------------------------------------------
+Rede Sem Fio (Wireless Access Points):
+
+Em cada VLAN (Administração, Engenharia e Visitantes), foram configurados Access Points para fornecer conectividade sem fio aos dispositivos.
+SSID (Service Set Identifier): Nexus-(Nome Setor aqui) (Ex: Nexus-Administracao, Nexus-Engenharia, Nexus-Visitantes).
+Senha de Acesso: nexus.
+--------------------------------------------------------------------------------------------------
+Servidor de E-mail (SMTP e POP3):
+
+Um servidor de e-mail foi configurado no endereço IP 192.168.40.5 para o domínio nexus.com.
+As máquinas principais de cada departamento já estão configuradas com as credenciais de e-mail correspondentes para testes:
+Administração:
+ADM-1: sandra.marcia@nexus.com
+ADM-2: gabriel.cesar@nexus.com
+Engenharia:
+ENG-1: bernardo.danilo@nexus.com
+ENG-2: anthony.enzo@nexus.com
+Filial:
+FILIAL-1: renato.severino@nexus.com
+FILIAL-2: sophia.patricia@nexus.com
+--------------------------------------------------------------------------------------------------
+Servidor DNS (Domain Name System):
+
+O servidor DNS está configurado com registros para facilitar o acesso aos serviços internos da empresa, permitindo a resolução de nomes de domínio para endereços IP. Os seguintes registros foram configurados:
+Banco de Dados: bd.nexus.local
+Aplicações Internas: app.nexus.local
+Servidor SMTP/POP3: smtp.nexus.com
+Servidor HTTP (Site Interno): www.nexus.com
+--------------------------------------------------------------------------------------------------
+Impressoras de Rede:
+
+Impressoras foram adicionadas à rede, alocadas em faixas de IP separadas, dentro da sub-rede de infraestrutura, para equipamentos fixos.
+Todas as impressoras estão configuradas com o endereço IP: 192.168.XX.2, onde XX representa o número da VLAN correspondente ao setor onde a impressora está localizada (ex: 192.168.10.2 para impressora na Administração, 192.168.20.2 para Engenharia, etc., assumindo que esta é uma convenção para impressoras dentro da VLAN, ou se a intenção é que estejam na VLAN de Infraestrutura, seria na faixa 192.168.40.X).

@@ -1,0 +1,14 @@
+Estrutura Física da Rede e Expansão por Setor
+O design da rede da Nexus, embora conceitualmente em estrela com o switch principal como centro, foi fisicamente implementado para suportar a expansão e a distribuição dos equipamentos por setor.
+
+A estrutura física da rede é composta por:
+
+Switch Central (Core): Um switch gerenciável de camada 2 atua como o centro da estrela na topologia, concentrando todas as conexões do roteador (através da porta trunk) e dos switches de cada setor. Este switch é crucial para a comunicação inter-VLAN, encaminhando o tráfego de e para o roteador.
+
+Switches por Setor: Além do switch principal, cada setor (Administração, Engenharia, Visitantes e Infraestrutura) possui seu próprio switch de acesso dedicado. Esses switches são responsáveis por:
+
+Conexão de Dispositivos Locais: Conectam diretamente os PCs, impressoras, telefones IP e Access Points Wireless de cada departamento.
+Segmentação Física: Permitem a distribuição física dos dispositivos dentro de um setor, facilitando a organização dos cabos e a manutenção.
+Escalabilidade Local: Se um setor precisar adicionar mais dispositivos, isso pode ser feito conectando-os ao seu switch local, sem sobrecarregar o switch principal ou exigir mais portas nele imediatamente. A capacidade de adicionar um switch por setor aumenta significativamente o número total de portas disponíveis na rede.
+Gerenciamento Distribuído: Embora logicamente parte de uma VLAN, o switch local permite um gerenciamento mais granular e a aplicação de configurações de porta específicas para os dispositivos daquele setor.
+Essa arquitetura com switches dedicados por setor, conectados a um switch central, garante não apenas a organização e o isolamento do tráfego através das VLANs, mas também proporciona uma alta escalabilidade física. Permite que cada setor cresça independentemente em termos de número de dispositivos, sem a necessidade de grandes intervenções na infraestrutura principal da rede.

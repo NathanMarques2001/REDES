@@ -1,0 +1,25 @@
+Configuração das Interfaces do Roteador e Funcionamento do DHCP
+O roteador é o componente central responsável por possibilitar a comunicação entre as diferentes redes (VLANs) e com a filial. Suas interfaces foram configuradas para atuar como gateways para cada sub-rede e para permitir a distribuição automática de endereços IP via DHCP.
+
+1. Roteamento Inter-VLAN (Router-on-a-Stick)
+Para gerenciar o tráfego das VLANs, a interface física principal do roteador, GigabitEthernet0/0/0, é configurada para operar como uma porta tronco (trunk). Isso permite que ela receba e envie pacotes de todas as VLANs configuradas no switch. Dentro dessa interface física, são criadas subinterfaces, uma para cada VLAN. Cada subinterface é responsável por:
+
+Identificação de VLANs: Utiliza o padrão IEEE 802.1Q (dot1Q) para reconhecer e encapsular o tráfego pertencente a uma VLAN específica.
+Gateway Padrão: Atribui um endereço IP que serve como o gateway padrão para todos os dispositivos naquela VLAN. Isso significa que, para um dispositivo em uma VLAN se comunicar com outro em uma VLAN diferente ou fora da rede local, o tráfego será primeiramente enviado para o IP do gateway em sua própria subinterface.
+As subinterfaces configuradas são:
+
+GigabitEthernet0/0/0.10 (VLAN 10 - Administração): Atua como gateway para a sub-rede 192.168.10.0/25 (Máscara 255.255.255.128), com o IP 192.168.10.1.
+GigabitEthernet0/0/0.20 (VLAN 20 - Engenharia): Atua como gateway para a sub-rede 192.168.20.0/25 (Máscara 255.255.255.128), com o IP 192.168.20.1.
+GigabitEthernet0/0/0.30 (VLAN 30 - Visitantes): Atua como gateway para a sub-rede 192.168.30.0/24 (Máscara 255.255.255.0), com o IP 192.168.30.1.
+GigabitEthernet0/0/0.40 (VLAN 40 - Infraestrutura): Atua como gateway para a sub-rede 192.168.40.0/29 (Máscara 255.255.255.248), com o IP 192.168.40.1. Esta VLAN hospeda os servidores da empresa, incluindo o servidor DHCP.
+2. Distribuição Automática de IPs (DHCP Relay Agent)
+Para que os computadores nas VLANs de Administração, Engenharia e Visitantes possam receber seus endereços IP automaticamente do servidor DHCP (que está na VLAN de Infraestrutura), o roteador foi configurado como um DHCP Relay Agent (agente de retransmissão DHCP) em cada subinterface de usuário.
+
+Quando um dispositivo em uma VLAN (por exemplo, VLAN 10) solicita um endereço IP, ele envia uma requisição DHCP em broadcast.
+Como roteadores não encaminham broadcasts entre redes, as subinterfaces GigabitEthernet0/0/0.10, GigabitEthernet0/0/0.20 e GigabitEthernet0/0/0.30 são configuradas com o comando ip helper-address 192.168.40.2.
+Essa configuração instrui o roteador a converter a requisição DHCP de broadcast em um pacote unicast e encaminhá-lo diretamente para o servidor DHCP, localizado no IP 192.168.40.2 (na VLAN de Infraestrutura).
+O servidor DHCP, ao receber a requisição, pode então responder diretamente ao cliente através do roteador, que encaminha a resposta de volta para a VLAN de origem.
+3. Conectividade WAN com a Filial
+A comunicação com a filial é estabelecida através de uma interface serial, Serial0/1/0. Esta interface é configurada com o endereço IP 200.0.0.1 e máscara 255.255.255.252, formando um link ponto a ponto com o roteador da filial. A taxa de clock (clock rate) é configurada para garantir a sincronização da transmissão de dados neste link.
+
+Para que o tráfego da matriz possa alcançar a rede da filial (192.168.50.0/25), foi configurada uma rota estática no roteador da matriz. Esta rota aponta que todo o tráfego destinado à rede 192.168.50.0 deve ser encaminhado para o próximo salto no link serial, que é o endereço IP 200.0.0.2 (a interface do roteador da filial). Isso garante que a filial tenha acesso total aos servidores internos e aplicações do escritório central, conforme o requisito do projeto.

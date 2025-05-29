@@ -1,0 +1,21 @@
+Design da Topologia e Dimensionamento de Sub-Redes
+A rede da Nexus foi projetada com base em uma topologia física de estrela, onde o switch gerenciável atua como o ponto central da rede. Essa escolha de topologia é particularmente adequada para redes com múltiplas VLANs, pois facilita o gerenciamento centralizado do tráfego e a implementação de roteamento entre VLANs (Router-on-a-Stick), utilizando uma única interface física do roteador conectada ao switch em modo trunk. 
+
+O dimensionamento de cada sub-rede foi cuidadosamente planejado utilizando VLSM (Variable Length Subnet Masking) para otimizar o uso do espaço de endereçamento IP e atender às necessidades específicas de cada segmento da rede, incluindo uma margem de segurança para futuros crescimentos. 
+
+As características de endereçamento para cada tipo de rede são as seguintes:
+
+VLANs dos Setores (Administração, Engenharia e Filial):
+Faixa de IPs: Cada sub-rede de setor (/25) oferece 126 endereços IP utilizáveis.
+Alocação: Desses IPs, um é reservado para o gateway da VLAN no roteador. Os IPs restantes são distribuídos da seguinte forma: aproximadamente 10 IPs são previstos para equipamentos de infraestrutura (como impressoras ou pontos de acesso dedicados àquela VLAN) e os restantes (cerca de 115) para hosts (computadores e smartphones de funcionários).
+Endereços Especiais: Cada sub-rede possui um único endereço de rede e um único endereço de broadcast. No caso de uma sub-rede /25, o endereço de broadcast é o último IP da faixa (ex: 192.168.10.127 para 192.168.10.0/25).
+
+VLAN de Visitantes:
+Faixa de IPs: A sub-rede de visitantes (/24) oferece 254 endereços IP utilizáveis, sendo a maior faixa para acomodar um número variável e potencialmente elevado de visitantes.
+Alocação: Um IP é reservado para o gateway da VLAN. Os restantes (cerca de 253) são destinados aos hosts dos visitantes.
+Endereços Especiais: Assim como as demais, esta sub-rede possui um único endereço de rede e um único endereço de broadcast (ex: 192.168.30.255 para 192.168.30.0/24).
+Rede de Infraestrutura (Servidores):
+
+Faixa de IPs: A sub-rede de infraestrutura (/26) oferece 62 endereços IP utilizáveis.
+Alocação: Um IP é reservado para o gateway, e outros IPs são destinados especificamente aos servidores (DHCP, HTTP, DNS, Aplicações Internas, Banco de Dados, E-mail) e demais equipamentos fixos de infraestrutura, com aproximadamente 10 IPs para esses dispositivos e os demais para expansão de hosts de gerenciamento ou serviços futuros.
+Endereços Especiais: Esta sub-rede também possui um único endereço de rede e um único endereço de broadcast (ex: 192.168.40.63 para 192.168.40.0/26).
